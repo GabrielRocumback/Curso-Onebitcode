@@ -1,6 +1,8 @@
 :root {
     --color-white: #fff;
     --color-black: #333;
+    --color-selected-green: rgb(0, 120, 0);
+    --color-selected-blue: rgb(0, 0, 120);
     --color-border: #ccc;
     --color-button: #007BFF;
     --color-button-hover: #0056b3;
@@ -16,9 +18,12 @@
     --transition-speed: 0.2s;
 }
 
-body {
+* {
     margin: 0;
     padding: 0;
+}
+
+body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     display: flex;
@@ -150,10 +155,7 @@ button:disabled {
 }
 
 .grid-item.selected {
-    background-color: var(--color-grid-hover);
-    border: 2px solid var(--color-button-hover);
-    transform: scale(var(--scale-1-05));
-    transition: all var(--transition-speed);
+    pointer-events: none;
 }
 
 .grid-item p {
@@ -165,6 +167,14 @@ button:disabled {
 
 .grid-item:hover p {
     transition: none;
+}
+
+.selected-green {
+    color: var(--color-selected-green);
+}
+
+.selected-blue {    
+    color: var(--color-selected-blue);
 }
 
 .grid-winner {
@@ -267,7 +277,3 @@ li {
     color: var(--color-white);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-
-
-
-

@@ -65,12 +65,14 @@ function addGridEvent() {
         if (gridItem.classList.contains('grid-item')) {
             const item = gridItem.querySelector('p');
             if (item.innerHTML.trim() === '') {
-                // gridItem.classList.add('selected'); // Adiciona a classe de destaque
+                gridItem.classList.add('selected'); // Adiciona a classe de destaque
                 item.innerHTML = nextMove;
                 if (nextMove === 'x') {
-                    gridItem.style.color = 'rgb(0, 120, 0)';
+                    // gridItem.style.color = 'rgb(0, 120, 0)';
+                    item.classList.add('selected-green');
                 } else {
-                    gridItem.style.color = 'rgb(0, 0, 120)';
+                    // gridItem.style.color = 'rgb(0, 0, 120)';
+                    item.classList.add('selected-blue');
                 }
                 changeNextPlayer(nextPlayer.innerHTML);
                 itensGame.find(item => item.gridItem === gridItem.id).Simbolo = nextMove;
@@ -194,8 +196,10 @@ function clearGrid() {
         item.Simbolo = '';
     })
     gridItens.forEach(item => {
-        item.querySelector('p').innerHTML = '';
-        item.classList.remove('grid-winner');
+        const itemMove = item.querySelector('p');
+        itemMove.innerHTML = '';
+        itemMove.classList.remove('selected-blue', 'selected-green');
+        item.classList.remove('grid-winner', 'selected');
     })
 }
 

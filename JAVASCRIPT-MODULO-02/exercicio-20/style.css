@@ -99,7 +99,7 @@ button {
     color: var(--color-white);
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 button:hover {
@@ -138,6 +138,7 @@ button:disabled {
     font-weight: bold;
     background-color: var(--color-white);
     cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed), color var(--transition-speed);
 }
 
 .grid-item:hover {
@@ -145,7 +146,7 @@ button:disabled {
     /* border-radius: 8px; */
     background-color: var(--color-grid-hover);
     /* transform: scale(var(--scale-1-03)); */
-    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    transition: background-color var(--transition-speed), transform var(--transition-speed), color var(--transition-speed);
 }
 
 .grid-item.selected {
@@ -240,11 +241,13 @@ li {
 #feedback-message.visible {
     opacity: 1;
     visibility: visible;
+    transition: opacity 0.5s, visibility 0.5s;
 }
 
 #feedback-message.hidden {
     opacity: 0;
     visibility: hidden;
+    transition: opacity 0.5s, visibility 0.5s;
 }
 
 #feedback-message.restart {

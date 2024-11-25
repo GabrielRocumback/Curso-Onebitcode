@@ -1,0 +1,91 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: "Fira Sans", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+header{
+    font-size: 1.125rem;
+    padding: 2rem 0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+h1, h2{
+    font-family: "Lora", serif;
+    font-weight: 400;
+}
+
+h1{
+    font-size: 3.5rem;
+    margin: 1rem;
+}
+
+h2{
+    font-size: 2rem;
+    margin: 1rem;
+}
+
+
+.container-one, .container-two, .container-three{
+    font-size: 1.125rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+.bt-black{
+    display: block;
+    width: fit-content;
+    margin: 2rem auto;
+    padding: 1rem 1.5rem;
+    border: 4px solid #000000;
+    border-radius: 2rem;
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.genres > li{
+    display: inline-block;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.genre > a, .see-more > a{
+    margin: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: 4px solid #4da9ff;
+    border-radius: 2rem;
+    background-color: #4da9ff;
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.see-more > a{
+    border-color: #000000;
+    background-color: #000000;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.genre > a:hover{
+    border-color: hsl(205, 100%, 70%);
+    background-color: hsl(205, 100%, 70%);
+}
+
+.bt-black:hover, .see-more > a:hover{
+    border-color: hsl(0, 0%, 20%);
+    background-color: hsl(0, 0%, 20%);
+}
+
+footer{
+    margin-top: 3rem;
+    padding: 2rem;
+    text-align: center;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: "Lora", serif;
+}

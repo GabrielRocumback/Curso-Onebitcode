@@ -34,6 +34,9 @@ body {
 }
 
 form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 4rem;
     border-radius: 10px;
     background-color: var(--color-white);
@@ -68,6 +71,13 @@ h2 {
     width: 100%;
 }
 
+.option {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
 label {
     font-size: 1.2rem;
     font-weight: bold;
@@ -80,11 +90,9 @@ div p {
     margin: 20px 0 40px 0;
 }
 
-input {
+input[type="text"] {
     padding: 10px;
     margin-bottom: 20px;
-    width: 100%;
-    max-width: 400px;
     /* text-align: center; */
     font-size: 1.2rem;
     border: 2px solid var(--color-border);
@@ -120,6 +128,31 @@ button:disabled {
     box-shadow: none;
     transform: none;
     transition: none;
+}
+
+.box-cpu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.box-cpu label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0 0 0 0.5rem;
+}
+
+.box-cpu input {
+    cursor: pointer;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin: 3px;
+}
+
+.box-cpu input:hover:not(:disabled) {
+    transform: scale(1.01);
+    transition: transform var(--transition-speed);
 }
 
 .grid-container {
@@ -178,7 +211,7 @@ button:disabled {
 }
 
 .grid-winner {
-    pointer-events: none;
+    /* pointer-events: none; */
     border-radius: 8px;
     background-color: var(--color-winner);
     color: var(--color-white);

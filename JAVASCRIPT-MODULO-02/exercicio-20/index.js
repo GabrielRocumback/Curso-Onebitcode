@@ -15,7 +15,7 @@ const cpuCheckbox = document.getElementById('cpu-checkbox');
 //Estado do jogo
 const gridArray = Array.from(gridItens);
 const itensID = gridArray.map(item => item.id)
-let players = [] 
+let players = []
 let itensGame = []
 let nextMove = 'o'
 const rounds = 3
@@ -46,7 +46,7 @@ form.addEventListener('submit', (ev) => {
     //     playerScore.querySelector('span').innerHTML = data;
     // });
     itensID.forEach(item => {
-        itensGame.push({ gridItem: item, simbolo: '' }); 
+        itensGame.push({ gridItem: item, simbolo: '' });
     });
 
     toggleDisabledElement(player1);
@@ -55,7 +55,7 @@ form.addEventListener('submit', (ev) => {
     }
     toggleDisabledElement(cpuCheckbox);
     toggleDisabledElement(startButton);
-    toggleDisabledElement(restartButton);
+    toggleDisabledElement(restartButton, false);
     nextPlayer.innerHTML = player1.value;
     addGridEvent();
     enabledGrid();
@@ -92,16 +92,21 @@ function addGridEvent() {
                 nextMove = changeNextMove(nextMove);
 
                 let response = await validateItems();
-                if (player2.value === 'CPU' && nextPlayer.innerHTML.toLocaleUpperCase() === 'CPU') {
+                if (nextPlayer.innerHTML.toLocaleUpperCase() === 'CPU') {
                     response = await cpuGame(response); // Garantir que a jogada da CPU seja processada
-                    toggleDisabledElement(clearButton);
-                    toggleDisabledElement(restartButton);
                 }
-                
-                if (response.winner) {
+
+                if (response.status === 'ongoing') {
+                    toggleDisabledElement(clearButton, false);
+                    toggleDisabledElement(restartButton, false);
+                }
+
+                if (response.status === 'win') {
                     gameStatus.querySelector('span').innerHTML = 'Fim de jogo';
                     displayMessage(response.winner + ' venceu!', 'success');
-                }
+                    toggleDisabledElement(clearButton);
+                    toggleDisabledElement(restartButton, false);
+                } 
             }
         }
     });
@@ -218,7 +223,7 @@ async function validateItems() {
             combination.forEach(id => document.getElementById(id).classList.add('grid-winner'));
             disabledGrid();
 
-            return showWinner();;
+            return showWinner();
         }
     }
 
@@ -252,14 +257,13 @@ function showWinner() {
         const data = winnerPlayer.id;
         winnerScore.setAttribute('data-value', data);
         winnerScore.querySelector('span').innerHTML = players.find(player => player.id === data).nome;
-        toggleDisabledElement(clearButton);
         return { status: 'win', winner: winnerPlayer.nome };
     }
     return { status: 'ongoing' };
 }
 
-function toggleDisabledElement(control) {
-    control.toggleAttribute('disabled');
+function toggleDisabledElement(control, status = true) {
+    control.toggleAttribute('disabled', status);
 }
 
 function enabledGrid() {
@@ -302,11 +306,11 @@ function restartGame() {
     nextPlayer.innerHTML = '';
     clearGrid();
     removeGridEvent();
-    toggleDisabledElement(player1);
-    toggleDisabledElement(player2);
-    toggleDisabledElement(startButton);
+    toggleDisabledElement(player1, false);
+    toggleDisabledElement(player2, false);
+    toggleDisabledElement(startButton, false);
     toggleDisabledElement(restartButton);
-    toggleDisabledElement(cpuCheckbox)
+    toggleDisabledElement(cpuCheckbox, false);
     cpuCheckbox.checked = false;
     scoreboard.querySelectorAll('li').forEach(item => {
         item.dataset.value = (item.id === 'winner' || item.id === 'game-status') ? ' ' : 0;

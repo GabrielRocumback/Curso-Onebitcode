@@ -1,26 +1,26 @@
-//Elementos
-const form = document.querySelector('form')
+// Elementos
+const form = document.querySelector('form');
 const gridContainer = document.querySelector('.grid-container');
-const startButton = document.getElementById('start-button')
-const clearButton = document.getElementById('clear-button')
-const restartButton = document.getElementById('restart-button')
-const player1 = document.getElementById('player-1')
-const player2 = document.getElementById('player-2')
-const nextPlayer = document.querySelector('.menu p span')
-const scoreboard = document.querySelector('.scoreboard')
+const startButton = document.getElementById('start-button');
+const clearButton = document.getElementById('clear-button');
+const restartButton = document.getElementById('restart-button');
+const player1 = document.getElementById('player-1');
+const player2 = document.getElementById('player-2');
+const nextPlayer = document.querySelector('.menu p span');
+const scoreboard = document.querySelector('.scoreboard');
 const gridItens = document.querySelectorAll('.grid-item');
 const gameStatus = document.getElementById('game-status');
 const cpuCheckbox = document.getElementById('cpu-checkbox');
 
-//Estado do jogo
-const gridArray = Array.from(gridItens);
-const itensID = gridArray.map(item => item.id)
-let players = []
-let itensGame = []
-let nextMove = 'o'
-const rounds = 3
+// Estado inicial do jogo
+const gridArray = Array.from(gridItens); // Converte NodeList para array
+const itensID = gridArray.map(item => item.id); // IDs únicos dos itens do grid
+let players = []; // Lista de jogadores
+let itensGame = []; // Estado atual do grid
+let nextMove = 'o'; // Jogador inicial
+const rounds = 3; // Número máximo de rodadas
 
-//Eventos
+// Eventos
 form.addEventListener('submit', (ev) => {
     ev.preventDefault()
 
@@ -92,21 +92,22 @@ function addGridEvent() {
                 nextMove = changeNextMove(nextMove);
 
                 let response = await validateItems();
-                if (nextPlayer.innerHTML.toLocaleUpperCase() === 'CPU') {
+                if (response.status === 'ongoing' && nextPlayer.innerHTML.toUpperCase() === 'CPU') {
                     response = await cpuGame(response); // Garantir que a jogada da CPU seja processada
                 }
 
-                if (response.status === 'ongoing') {
+                if (response.status === 'ongoing' || response.status === 'draw') {
                     toggleDisabledElement(clearButton, false);
                     toggleDisabledElement(restartButton, false);
                 }
 
                 if (response.status === 'win') {
+                    disabledGrid();
                     gameStatus.querySelector('span').innerHTML = 'Fim de jogo';
                     displayMessage(response.winner + ' venceu!', 'success');
                     toggleDisabledElement(clearButton);
                     toggleDisabledElement(restartButton, false);
-                } 
+                }
             }
         }
     });
@@ -142,24 +143,43 @@ function delay(ms) {
 
 async function cpuGame(response) {
     if (response.status === 'draw') {
-        clearGrid();
-    }
-    const availableMoves = itensGame.filter(item => item.simbolo === '');
-    disabledGrid();
-    if (availableMoves.length > 0) {
-        await delay(1000); // Aguarda 1 segundo
-        const response = await cpuMove();
-        if (response.status === 'win') {
-            return response; // Retorna o responseado da vitória
-        }
-        enabledGrid(); // Reabilita o tabuleiro se a CPU não venceu
-    } else {
         console.log('Empate');
         await delay(1000); // Aguarda 1 segundo
-        clearGrid(); // Reinicia o jogo em caso de empate
-        return { status: 'draw' };
+        clearGrid();
     }
-    return { status: 'ongoing' }; // Jogo continua
+
+    do {
+        console.log('Jogada da CPU');
+
+        disabledGrid();
+        await delay(1000); // Simula tempo de processamento
+        response = await cpuMove();
+        
+        switch (response.status) {
+            case 'draw':
+                console.log('Empate');
+                await delay(1000);
+                clearGrid();
+                break;
+            case 'ongoing':
+                if (nextPlayer.innerHTML.toUpperCase() === 'CPU') {
+                    console.log('Loop da CPU');
+                    await delay(2000);
+                    clearGrid();
+                } else {
+                    enabledGrid();
+                }
+                break;
+            case 'win':
+                console.log('Vitória da CPU');
+                break;
+            default:
+                enabledGrid();
+        }
+    }
+    while (response.status === 'ongoing' && nextPlayer.innerHTML.toUpperCase() === 'CPU')
+    
+    return response;
 }
 
 async function cpuMove() {
@@ -168,7 +188,6 @@ async function cpuMove() {
     const randomMove = availableMoves[randomIndex];
 
     if (randomMove) {
-        console.log('Jogada da CPU');
         const gridCell = document.getElementById(randomMove.gridItem).querySelector('p');
         gridCell.innerHTML = nextMove;
         gridCell.classList.add(nextMove === 'x' ? 'selected-green' : 'selected-blue');
@@ -177,19 +196,9 @@ async function cpuMove() {
         nextMove = changeNextMove(nextMove);
         changeNextPlayer(nextPlayer.innerHTML);
 
-        const response = await validateItems(); // Valida após a jogada da CPU
-        if (response.status === 'win') {
-            console.log('Vitória da CPU');
-            return response;
-        }
-        if (response.status === 'ongoing' && nextPlayer.innerHTML.toLocaleUpperCase() === 'CPU') {
-            console.log('Loop da CPU');
-            await delay(2000); // Aguarda 1 segundo
-            clearGrid();
-            await cpuGame(response); // Recursividade para a jogada da CPU
-        }
+        return await validateItems(); // Valida após a jogada da CPU
     }
-    return { status: 'ongoing' }; // Retorna se a CPU não venceu
+    return { status: 'ongoing' };
 }
 
 async function validateItems() {

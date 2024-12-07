@@ -8,54 +8,52 @@
     <title>Jogo da Velha</title>
 </head>
 <body>
-    <form action="">
-        <header>
-            <div class="menu">
-                <h1>Jogadores</h1>
-                <div class="options">
-                    <label for="player-1">Jogador 1</label>
-                    <input type="text" id="player-1" name="player-1" required>
-                    <label for="player-2">Jogador 2</label>
-                    <input type="text" id="player-2" name="player-2" required>
-                    <div class="box-cpu">
-                        <label for="cpu-checkbox">CPU</label>
-                        <input type="checkbox" id ="cpu-checkbox" name="cpu-checkbox">    
-                    </div>
+    <header>
+        <div class="menu">
+            <h1>Jogadores</h1>
+            <div class="options">
+                <label for="player-1">Jogador 1</label>
+                <input type="text" id="player-1" name="player-1" required>
+                <label for="player-2">Jogador 2</label>
+                <input type="text" id="player-2" name="player-2" required>
+                <div class="box-cpu">
+                    <label for="cpu-checkbox">CPU</label>
+                    <input type="checkbox" id ="cpu-checkbox" name="cpu-checkbox">    
                 </div>
-                <div>
-                    <button id="start-button" class="button-primary" type="submit">Iniciar</button>
-                    <button id="clear-button" class="button-primary" type="button">Limpar</button>
-                    <button id="restart-button" class="button-primary" type="button" disabled>Reiniciar</button>
-                </div>
-                <p>Jogador da vez: <span></span></p>               
             </div>
-            <div id="feedback-message" class="hidden"></div>
-        </header>
-        <main>
-            <div class="grid-container">
-                <div id="grid-item-1" class="grid-item" onclick=""><p></p></div>
-                <div id="grid-item-2" class="grid-item" onclick=""><p></p></div>
-                <div id="grid-item-3" class="grid-item" onclick=""><p></p></div>  
-                <div id="grid-item-4" class="grid-item" onclick=""><p></p></div>
-                <div id="grid-item-5" class="grid-item" onclick=""><p></p></div>
-                <div id="grid-item-6" class="grid-item" onclick=""><p></p></div>  
-                <div id="grid-item-7" class="grid-item" onclick=""><p></p></div>
-                <div id="grid-item-8" class="grid-item" onclick=""><p></p></div>
-                <div id="grid-item-9" class="grid-item" onclick=""><p></p></div>  
+            <div>
+                <button id="start-button" class="button-primary" type="button">Iniciar</button>
+                <button id="clear-button" class="button-primary" type="button">Limpar</button>
+                <button id="restart-button" class="button-primary" type="button" disabled>Reiniciar</button>
             </div>
-            <div class="scoreboard">
-                <ul>
-                    <h2>Placar</h2>
-                    <li id="player-1-score" data-value="0">Jogador 1: <span>0</span></li>
-                    <li id="player-2-score" data-value="0">Jogador 2: <span>0</span></li>
-                    <li id="draw-score" data-value="0">Empates: <span>0</span></li>
-                    <!-- <li id="current-player">Jogador da vez: <span></span></li> -->
-                    <li id="winner" data-value=" ">Vencedor: <span></span></li>
-                    <li id="game-status" data-value=" ">Status do jogo: <span></span></li>
-                    <!-- <li id="game-message">Mensagem do jogo: <span></span></li> -->
-                </ul>
-            </div>
-        </main>
-    </form>
+            <p>Jogador da vez: <span></span></p>               
+        </div>
+        <div id="feedback-message" class="hidden"></div>
+    </header>
+    <main>
+        <div class="grid-container">
+            <div id="grid-item-1" class="grid-item" onclick=""><p></p></div>
+            <div id="grid-item-2" class="grid-item" onclick=""><p></p></div>
+            <div id="grid-item-3" class="grid-item" onclick=""><p></p></div>  
+            <div id="grid-item-4" class="grid-item" onclick=""><p></p></div>
+            <div id="grid-item-5" class="grid-item" onclick=""><p></p></div>
+            <div id="grid-item-6" class="grid-item" onclick=""><p></p></div>  
+            <div id="grid-item-7" class="grid-item" onclick=""><p></p></div>
+            <div id="grid-item-8" class="grid-item" onclick=""><p></p></div>
+            <div id="grid-item-9" class="grid-item" onclick=""><p></p></div>  
+        </div>
+        <div class="scoreboard">
+            <ul>
+                <h2>Placar</h2>
+                <li id="player-1-score" data-value="0">Jogador 1: <span>0</span></li>
+                <li id="player-2-score" data-value="0">Jogador 2: <span>0</span></li>
+                <li id="draw-score" data-value="0">Empates: <span>0</span></li>
+                <!-- <li id="current-player">Jogador da vez: <span></span></li> -->
+                <li id="winner" data-value=" ">Vencedor: <span></span></li>
+                <li id="game-status" data-value=" ">Status do jogo: <span></span></li>
+                <!-- <li id="game-message">Mensagem do jogo: <span></span></li> -->
+            </ul>
+        </div>
+    </main>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // Elementos
-const form = document.querySelector('form');
+const body = document.querySelector('body');
 const gridContainer = document.querySelector('.grid-container');
 const startButton = document.getElementById('start-button');
 const clearButton = document.getElementById('clear-button');
@@ -21,7 +21,7 @@ let nextMove = 'o'; // Jogador inicial
 const rounds = 3; // Número máximo de rodadas
 
 // Eventos
-form.addEventListener('submit', (ev) => {
+startButton.addEventListener('click', (ev) => {
     ev.preventDefault()
 
     // Verificar se os campos de nome estão preenchidos
@@ -81,7 +81,7 @@ function addGridEvent() {
         if (gridItem.classList.contains('grid-item')) {
             const item = gridItem.querySelector('p');
             if (item.innerHTML.trim() === '') {
-                console.log('click');
+                console.log('Jogada de ' + nextPlayer.innerHTML);
                 toggleDisabledElement(clearButton);
                 toggleDisabledElement(restartButton);
                 gridItem.classList.add('selected');
@@ -91,8 +91,8 @@ function addGridEvent() {
                 itensGame.find(item => item.gridItem === gridItem.id).simbolo = nextMove;
                 nextMove = changeNextMove(nextMove);
 
-                let response = await validateItems();
-                if (response.status === 'ongoing' && nextPlayer.innerHTML.toUpperCase() === 'CPU') {
+                let response = await victoryCondition();
+                if ((response.status === 'ongoing' || response.status === 'draw') && nextPlayer.innerHTML.toUpperCase() === 'CPU') {
                     response = await cpuGame(response); // Garantir que a jogada da CPU seja processada
                 }
 
@@ -104,7 +104,7 @@ function addGridEvent() {
                 if (response.status === 'win') {
                     disabledGrid();
                     gameStatus.querySelector('span').innerHTML = 'Fim de jogo';
-                    displayMessage(response.winner + ' venceu!', 'success');
+                    displayMessage(response.winner + ' venceu o jogo!', 'success');
                     toggleDisabledElement(clearButton);
                     toggleDisabledElement(restartButton, false);
                 }
@@ -143,21 +143,18 @@ function delay(ms) {
 
 async function cpuGame(response) {
     if (response.status === 'draw') {
-        console.log('Empate');
         await delay(1000); // Aguarda 1 segundo
         clearGrid();
     }
 
     do {
-        console.log('Jogada da CPU');
-
         disabledGrid();
         await delay(1000); // Simula tempo de processamento
+        console.log('Jogada da CPU');
         response = await cpuMove();
-        
+
         switch (response.status) {
             case 'draw':
-                console.log('Empate');
                 await delay(1000);
                 clearGrid();
                 break;
@@ -171,37 +168,284 @@ async function cpuGame(response) {
                 }
                 break;
             case 'win':
-                console.log('Vitória da CPU');
                 break;
             default:
                 enabledGrid();
         }
     }
     while (response.status === 'ongoing' && nextPlayer.innerHTML.toUpperCase() === 'CPU')
-    
+
     return response;
 }
 
 async function cpuMove() {
-    const availableMoves = itensGame.filter(item => item.simbolo === '');
-    const randomIndex = Math.floor(Math.random() * availableMoves.length);
-    const randomMove = availableMoves[randomIndex];
+    const bestMove = getBestMove();
 
-    if (randomMove) {
-        const gridCell = document.getElementById(randomMove.gridItem).querySelector('p');
+    if (bestMove) {
+        const gridCell = document.getElementById(bestMove.gridItem).querySelector('p');
         gridCell.innerHTML = nextMove;
         gridCell.classList.add(nextMove === 'x' ? 'selected-green' : 'selected-blue');
-        randomMove.simbolo = nextMove;
+        bestMove.simbolo = nextMove;
 
         nextMove = changeNextMove(nextMove);
         changeNextPlayer(nextPlayer.innerHTML);
 
-        return await validateItems(); // Valida após a jogada da CPU
+        return await victoryCondition(); // Valida após a jogada da CPU
     }
     return { status: 'ongoing' };
 }
 
-async function validateItems() {
+function winMove(winningCombinations) {
+    // Verifique se há uma jogada vencedora
+    for (const combination of winningCombinations) {
+        const [a, b, c] = combination;
+        const aItem = itensGame.find(item => item.gridItem === a);
+        const bItem = itensGame.find(item => item.gridItem === b);
+        const cItem = itensGame.find(item => item.gridItem === c);
+
+        if (aItem.simbolo === 'x' && bItem.simbolo === 'x' && cItem.simbolo === '') {
+            return cItem;
+        }
+        if (aItem.simbolo === 'x' && cItem.simbolo === 'x' && bItem.simbolo === '') {
+            return bItem;
+        }
+        if (bItem.simbolo === 'x' && cItem.simbolo === 'x' && aItem.simbolo === '') {
+            return aItem;
+        }
+    }
+}
+
+function blockMove(blockCombinations) {
+    // Verifique se há um movimento de bloqueio
+    for (const combination of blockCombinations) {
+        const [a, b, c] = combination;
+        const aItem = itensGame.find(item => item.gridItem === a);
+        const bItem = itensGame.find(item => item.gridItem === b);
+        const cItem = itensGame.find(item => item.gridItem === c);
+
+        if (aItem.simbolo === 'o' && bItem.simbolo === 'o' && cItem.simbolo === '') {
+            return cItem;
+        }
+        if (aItem.simbolo === 'o' && cItem.simbolo === 'o' && bItem.simbolo === '') {
+            return bItem;
+        }
+        if (bItem.simbolo === 'o' && cItem.simbolo === 'o' && aItem.simbolo === '') {
+            return aItem;
+        }
+    }
+}
+
+function radomCombination() {
+    const combination1 = [
+        // Linhas
+        ['grid-item-1', 'grid-item-2', 'grid-item-3'],
+        ['grid-item-4', 'grid-item-5', 'grid-item-6'],
+        ['grid-item-7', 'grid-item-8', 'grid-item-9'],
+        // Colunas
+        ['grid-item-1', 'grid-item-4', 'grid-item-7'],
+        ['grid-item-2', 'grid-item-5', 'grid-item-8'],
+        ['grid-item-3', 'grid-item-6', 'grid-item-9'],
+        // Diagonais
+        ['grid-item-1', 'grid-item-5', 'grid-item-9'],
+        ['grid-item-3', 'grid-item-5', 'grid-item-7']
+    ];
+
+    const combination2 = [
+        // Diagonais
+        ['grid-item-1', 'grid-item-5', 'grid-item-9'],
+        ['grid-item-3', 'grid-item-5', 'grid-item-7'],
+        // Colunas
+        ['grid-item-2', 'grid-item-5', 'grid-item-8'],
+        ['grid-item-1', 'grid-item-4', 'grid-item-7'],
+        ['grid-item-3', 'grid-item-6', 'grid-item-9'],
+        // Linhas
+        ['grid-item-4', 'grid-item-5', 'grid-item-6'],
+        ['grid-item-1', 'grid-item-2', 'grid-item-3'],
+        ['grid-item-7', 'grid-item-8', 'grid-item-9'],
+    ];
+
+    const combination3 = [
+        // Diagonais
+        ['grid-item-1', 'grid-item-5', 'grid-item-9'],
+        ['grid-item-3', 'grid-item-5', 'grid-item-7'],
+        // Linhas
+        ['grid-item-4', 'grid-item-5', 'grid-item-6'],
+        ['grid-item-1', 'grid-item-2', 'grid-item-3'],
+        ['grid-item-7', 'grid-item-8', 'grid-item-9'],
+        // Colunas
+        ['grid-item-2', 'grid-item-5', 'grid-item-8'],
+        ['grid-item-1', 'grid-item-4', 'grid-item-7'],
+        ['grid-item-3', 'grid-item-6', 'grid-item-9'],
+    ];
+
+    const combinations = [combination1, combination2, combination3];
+    return combinations[Math.floor(Math.random() * combinations.length)];
+}
+
+function bestMove(randomCombination) {
+    // Verifique o melhor movimento
+    for (const combination of randomCombination) {
+        const [a, b, c] = combination;
+        const aItem = itensGame.find(item => item.gridItem === a);
+        const bItem = itensGame.find(item => item.gridItem === b);
+        const cItem = itensGame.find(item => item.gridItem === c);
+
+        if (aItem.simbolo === 'x' && bItem.simbolo === '' && cItem.simbolo !== 'o') {
+            if (cItem.simbolo === '') {
+                return cItem;
+            }
+            return bItem;
+        }
+        if (aItem.simbolo === '' && bItem.simbolo === 'x' && cItem.simbolo !== 'o') {
+            if (cItem.simbolo === '') {
+                return cItem;
+            }
+            return aItem;
+        }
+        if (aItem.simbolo === 'x' && cItem.simbolo === '' && bItem.simbolo !== 'o') {
+            if (bItem.simbolo === '') {
+                return bItem;
+            }
+            return cItem;
+        }
+        if (aItem.simbolo === '' && cItem.simbolo === 'x' && bItem.simbolo !== 'o') {
+            if (bItem.simbolo === '') {
+                return bItem;
+            }
+            return aItem;
+        }
+
+        if (bItem.simbolo === 'x' && aItem.simbolo === '' && cItem.simbolo !== 'o') {
+            if (cItem.simbolo === '') {
+                return cItem;
+            }
+            return aItem;
+        }
+        if (bItem.simbolo === '' && aItem.simbolo === 'x' && cItem.simbolo !== 'o') {
+            if (cItem.simbolo === '') {
+                return cItem;
+            }
+            return bItem;
+        }
+        if (bItem.simbolo === 'x' && cItem.simbolo === '' && aItem.simbolo !== 'o') {
+            if (aItem.simbolo === '') {
+                return aItem;
+            }
+            return cItem;
+        }
+        if (bItem.simbolo === '' && cItem.simbolo === 'x' && aItem.simbolo !== 'o') {
+            if (aItem.simbolo === '') {
+                return aItem;
+            }
+            return bItem;
+        }
+
+        if (cItem.simbolo === 'x' && aItem.simbolo === '' && bItem.simbolo !== 'o') {
+            if (bItem.simbolo === '') {
+                return bItem;
+            }
+            return aItem;
+        }
+        if (cItem.simbolo === '' && aItem.simbolo === 'x' && bItem.simbolo !== 'o') {
+            if (bItem.simbolo === '') {
+                return bItem;
+            }
+            return cItem;
+        }
+        if (cItem.simbolo === 'x' && bItem.simbolo === '' && aItem.simbolo !== 'o') {
+            if (aItem.simbolo === '') {
+                return aItem;
+            }
+            return bItem;
+        }
+        if (cItem.simbolo === '' && bItem.simbolo === 'x' && aItem.simbolo !== 'o') {
+            if (aItem.simbolo === '') {
+                return aItem;
+            }
+            return cItem;
+        }
+    }
+}
+
+function getBestMove() {
+    const availableMoves = itensGame.filter(item => item.simbolo === '');
+    const combinations = [
+        // Linhas
+        ['grid-item-1', 'grid-item-2', 'grid-item-3'],
+        ['grid-item-4', 'grid-item-5', 'grid-item-6'],
+        ['grid-item-7', 'grid-item-8', 'grid-item-9'],
+        // Colunas
+        ['grid-item-1', 'grid-item-4', 'grid-item-7'],
+        ['grid-item-2', 'grid-item-5', 'grid-item-8'],
+        ['grid-item-3', 'grid-item-6', 'grid-item-9'],
+        // Diagonais
+        ['grid-item-1', 'grid-item-5', 'grid-item-9'],
+        ['grid-item-3', 'grid-item-5', 'grid-item-7']
+    ];
+
+    const winMovement = winMove(combinations);
+    const blockMovement = blockMove(combinations);
+
+    // const bestStartCombinations = [
+        // // Linhas
+        // ['grid-item-1', 'grid-item-2'],
+        // ['grid-item-1', 'grid-item-3'],
+        // ['grid-item-2', 'grid-item-3'],
+
+        // ['grid-item-4', 'grid-item-5'],
+        // ['grid-item-4', 'grid-item-6'],
+        // ['grid-item-5', 'grid-item-6'],
+
+        // ['grid-item-7', 'grid-item-8'],
+        // ['grid-item-7', 'grid-item-9'],
+        // ['grid-item-8', 'grid-item-9'],
+
+        // // Colunas
+        // ['grid-item-1', 'grid-item-4'],
+        // ['grid-item-1', 'grid-item-7'],
+        // ['grid-item-4', 'grid-item-7'],
+
+        // ['grid-item-2', 'grid-item-5'],
+        // ['grid-item-2', 'grid-item-8'],
+        // ['grid-item-5', 'grid-item-8'],
+
+        // ['grid-item-3', 'grid-item-6'],
+        // ['grid-item-3', 'grid-item-9'],
+        // ['grid-item-6', 'grid-item-9'],
+
+        // // Diagonais
+        // ['grid-item-1', 'grid-item-5'],
+        // ['grid-item-1', 'grid-item-9'],
+        // ['grid-item-5', 'grid-item-9'],
+
+        // ['grid-item-3', 'grid-item-5'],
+        // ['grid-item-3', 'grid-item-7'],
+        // ['grid-item-5', 'grid-item-7'],
+    // ];
+
+
+    
+
+    // Movimento aleatório se não houver movimento vencedor, bloqueador ou melhor movimento inicial
+    
+    const combination = radomCombination();
+    const bestMovement = bestMove(combination);
+
+    if (winMovement) {
+        return winMovement;
+    }
+    if (blockMovement) {
+        return blockMovement;
+    }
+    if (bestMovement) {
+        return bestMovement;
+    }
+
+    const randomIndex = Math.floor(Math.random() * availableMoves.length);
+    return availableMoves[randomIndex];
+}
+
+async function victoryCondition() {
     const winningCombinations = [
         // Linhas
         ['grid-item-1', 'grid-item-2', 'grid-item-3'],
@@ -225,6 +469,7 @@ async function validateItems() {
         // Verifica se todos têm o mesmo símbolo
         if (a && b && c && a.simbolo && a.simbolo === b.simbolo && a.simbolo === c.simbolo) {
             const winner = players.find(player => player.simbolo === a.simbolo);
+            console.log('Vencedor do round: ' + winner.nome);
             changeScore(winner);
             nextPlayer.innerHTML = winner.nome;
             nextMove = winner.simbolo;
@@ -238,6 +483,7 @@ async function validateItems() {
 
     // Se todas as células estiverem preenchidas e nenhum vencedor for encontrado
     if (itensGame.every(item => item.simbolo !== '')) {
+        console.log('Empate');
         changeScore(null);
         return { status: 'draw' };
     }
@@ -266,6 +512,7 @@ function showWinner() {
         const data = winnerPlayer.id;
         winnerScore.setAttribute('data-value', data);
         winnerScore.querySelector('span').innerHTML = players.find(player => player.id === data).nome;
+        console.log(winnerPlayer.nome + ' venceu o jogo!');
         return { status: 'win', winner: winnerPlayer.nome };
     }
     return { status: 'ongoing' };

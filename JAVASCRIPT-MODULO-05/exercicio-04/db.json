@@ -1,0 +1,39 @@
+{
+  "accounts": [
+    {
+      "id": "1",
+      "name": "Lucas",
+      "balance": "1"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "1",
+      "accountId": "1",
+      "type": "1",
+      "amount": "500",
+      "date": "2023-10-01"
+    },
+    {
+      "id": "2",
+      "accountId": "1",
+      "type": "2",
+      "amount": "200",
+      "date": "2023-10-02"
+    },
+    {
+      "id": "3",
+      "accountId": "1",
+      "type": "1",
+      "amount": "100",
+      "date": "2025-05-20"
+    },
+    {
+      "id": "4",
+      "accountId": "1",
+      "type": "2",
+      "amount": "399",
+      "date": "2025-05-23"
+    }
+  ]
+}

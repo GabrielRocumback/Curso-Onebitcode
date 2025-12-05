@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Devs</title>
+    <script src="./index.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <h1>Cadastro de Devs</h1>
+    </header>
+    <main>
+        <form id="devForm">
+            <section>
+                <section id="menu">
+                    <label for="name">Nome Completo:</label>
+                    <input type="text" name="name" id="name" autocomplete="name" required="true">
+                    <br><br>
+                    <label>Tecnologias:</label>
+                    <br>
+                    <button type="button" id="buttonAdd">Adicionar</button>
+                </section>
+                <section id="opcoes">
+                    <ul id="list"></ul>
+                </section>
+                <button type="submit" id="buttonSubmit">Cadastrar</button>
+            </section>
+        </form>
+    </main>
+</body>
+
+</html>

@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "outFile": "main.js",
-    "target": "esnext",
-  },
-  "scripts": {
-    "build": "tsc"
-  }
-}

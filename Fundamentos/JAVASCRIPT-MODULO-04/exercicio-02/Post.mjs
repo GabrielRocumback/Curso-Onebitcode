@@ -1,0 +1,17 @@
+import Comment from "./Comment.mjs";
+
+class Post {
+    constructor(title, body, author) {
+        this.title = title;
+        this.body = body;
+        this.author = author;
+        this.comments = [];
+        this.createdAt = new Date();
+    }
+
+    addComment(username, comment) {
+        this.comments.push(new Comment(username, comment));
+    }
+}
+
+export default Post;
